@@ -243,8 +243,7 @@
   }
   @keyframes perde{0%,66%{opacity:1}100%{opacity:0}}
   .muhur{
-    position:relative; color:var(--vurgu); border:3px double currentColor;
-    border-radius:var(--kare); padding:15px 30px 17px; text-align:center;
+    position:relative; color:var(--vurgu); width:216px; height:216px;
     opacity:0; transform:rotate(var(--don)) scale(1.03);
     animation:basma .3s ease-out .42s forwards;
     mix-blend-mode:multiply; filter:saturate(1.15);
@@ -258,7 +257,7 @@
 
   /* ---- ahşap saplı damga: yukarıdan iner, bastırır, kalkar ---- */
   .damga{
-    position:absolute; left:50%; top:50%; width:132px; margin-left:-66px;
+    position:absolute; left:50%; top:50%; width:238px; margin-left:-119px;
     transform-origin:50% 100%; opacity:0; filter:drop-shadow(0 14px 18px rgba(0,0,0,.32));
     animation:indir 1.15s cubic-bezier(.45,0,.3,1) forwards;
   }
@@ -275,7 +274,8 @@
 
   /* mürekkebin basmadığı yerler: kağıt renginde lekeler */
   .muhur::after{
-    content:""; position:absolute; inset:-3px; pointer-events:none; opacity:.62;
+    content:""; position:absolute; inset:-3px; pointer-events:none; opacity:.55;
+    border-radius:50%;
     background:
       radial-gradient(circle at 9% 26%, var(--kagit) 0 6px, transparent 7px),
       radial-gradient(circle at 31% 8%, var(--kagit) 0 4px, transparent 5px),
@@ -286,13 +286,9 @@
       radial-gradient(circle at 18% 78%, var(--kagit) 0 4px, transparent 5px),
       repeating-linear-gradient(28deg, transparent 0 5px, rgba(255,255,255,.16) 5px 6px);
   }
-  .muhur b{
-    display:block; font-family:var(--serif); font-size:34px; font-weight:400;
-    letter-spacing:.16em; text-transform:uppercase; line-height:1;
-  }
-  [data-tema="siber"] .muhur b{font-family:var(--mono); font-size:24px; letter-spacing:.12em}
-  .muhur span{display:block; margin-top:9px; font-family:var(--olcu); font-size:12px; letter-spacing:.1em; opacity:.8}
-  .muhur em{display:block; margin-bottom:9px; font-size:11px; letter-spacing:.22em; opacity:.65; font-style:normal}
+  .muhur svg{display:block; width:100%; height:100%}
+  .muhur svg text{font-family:var(--serif); fill:currentColor}
+  [data-tema="siber"] .muhur svg text{font-family:var(--mono)}
 
   /* iniş anında sayfa sarsıntısı */
   @keyframes sars{
@@ -411,10 +407,39 @@ function muhurBas(t){
   k.style.setProperty("--don2", (aci - 7).toFixed(2) + "deg");
   const ic = document.createElement("div");
   ic.className = "muhur";
-  ic.innerHTML = '<em>' + (siber() ? "[ GOREV ]" : "İlerleme") + '</em>' +
-                 '<b>' + (siber() ? "TAMAMLANDI" : "Tamamlandı") + '</b>' +
-                 '<span></span>';
-  ic.querySelector("span").textContent = t.maddeler.length + " madde · " + tarih;
+  const disler = Array.from({length:44}, (_,i) => {
+    const a = i * (360/44) * Math.PI/180;
+    const r1 = 84, r2 = 90;
+    return '<line x1="' + (108+Math.cos(a)*r1).toFixed(1) + '" y1="' + (108+Math.sin(a)*r1).toFixed(1) +
+           '" x2="' + (108+Math.cos(a)*r2).toFixed(1) + '" y2="' + (108+Math.sin(a)*r2).toFixed(1) + '"/>';
+  }).join("");
+  ic.innerHTML =
+    '<svg viewBox="0 0 216 216" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' +
+        '<path id="ustyay" d="M108 108 m -68 0 a 68 68 0 0 1 136 0" fill="none"/>' +
+        '<path id="altyay" d="M108 108 m -60 0 a 60 60 0 0 0 120 0" fill="none"/>' +
+      '</defs>' +
+      /* mum kenarı: hafif düzensiz dış hat */
+      '<path d="M108 12 q34 -4 52 20 q24 20 20 52 q6 34 -18 54 q-18 28 -54 24 q-34 6 -54 -18 q-28 -18 -24 -54 q-6 -34 18 -54 q18 -28 60 -24 z" ' +
+        'fill="none" stroke="currentColor" stroke-width="5" opacity=".75"/>' +
+      '<circle cx="108" cy="108" r="90" fill="none" stroke="currentColor" stroke-width="2.5"/>' +
+      '<circle cx="108" cy="108" r="84" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+      '<g stroke="currentColor" stroke-width="1.6" opacity=".8">' + disler + '</g>' +
+      '<circle cx="108" cy="108" r="60" fill="none" stroke="currentColor" stroke-width="1.8"/>' +
+      '<circle cx="108" cy="108" r="56" fill="none" stroke="currentColor" stroke-width=".9" opacity=".7"/>' +
+      /* kavisli yazılar */
+      '<text font-size="13" letter-spacing="3.4" opacity=".9">' +
+        '<textPath href="#ustyay" startOffset="50%" text-anchor="middle">' + (siber() ? "GOREV" : "İLERLEME") + '</textPath></text>' +
+      '<text font-size="11.5" letter-spacing="2.6" opacity=".85" id="mtarih">' +
+        '<textPath href="#altyay" startOffset="50%" text-anchor="middle"></textPath></text>' +
+      /* ortadaki damga yazısı */
+      '<text x="108" y="103" font-size="25" letter-spacing="2.2" text-anchor="middle">TAMAM</text>' +
+      '<text x="108" y="130" font-size="25" letter-spacing="2.2" text-anchor="middle">LANDI</text>' +
+      '<line x1="62" y1="112" x2="82" y2="112" stroke="currentColor" stroke-width="1.4"/>' +
+      '<line x1="134" y1="112" x2="154" y2="112" stroke="currentColor" stroke-width="1.4"/>' +
+      '<circle cx="108" cy="146" r="2.4" fill="currentColor" opacity=".8"/>' +
+    '</svg>';
+  ic.querySelector("#mtarih textPath").textContent = t.maddeler.length + " MADDE · " + tarih;
   const dmg = document.createElement("div");
   dmg.className = "damga";
   dmg.innerHTML =
