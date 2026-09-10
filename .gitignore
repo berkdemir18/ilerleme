@@ -1,0 +1,6 @@
+veri.json
+veri.json.bak
+_dist/
+_build/
+__pycache__/
+port.txt
